@@ -10,6 +10,7 @@ Este proyecto consiste en una aplicación Node.js que se conecta a una base de d
 2. Crear el fichero con las variables de entorno
     2.1. Crear fichero de nombre .env
     2.2. Establecer las variables de entorno para MySQL, ejemplo de contenido:
+
         # Variables de entorno para MySQL
         MYSQL_ROOT_PASSWORD='Aa1234Bb5678'
         MYSQL_DATABASE='Comercio'
@@ -19,6 +20,7 @@ Este proyecto consiste en una aplicación Node.js que se conecta a una base de d
         MYSQL_USER='root'
         MYSQL_PASSWORD='Aa1234Bb5678'
         MYSQL_DATABASE='Comercio'
+        
 3. Ejecutar `docker-compose up --build` para construir y levantar los contenedores.
 4. Acceder a `http://localhost:1234` para ver la aplicación en ejecución.
 
