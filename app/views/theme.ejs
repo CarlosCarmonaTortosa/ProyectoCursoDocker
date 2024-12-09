@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Docker</title>
+    <link rel="stylesheet" href="/theme.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Proyecto Docker</div>
+        <div class="nav-links">
+            <a href="#">Inicio</a>
+            <a href="#">Contacto</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1><%= title %></h1>
+        <div class="grid">
+            <% productos.forEach(producto => { %>
+              <div class="card">
+                <div class="card-content">
+                <h2 class="card-title"><%= producto.nombre %></h2> 
+                <p class="card-text"><%= producto.descripcion %></p> 
+                <a href="#" class="btn"><%= producto.precio %> €</a> 
+                </div>
+              </div>
+            <% }); %>
+        </div>
+    </div>
+</body>
+</html>

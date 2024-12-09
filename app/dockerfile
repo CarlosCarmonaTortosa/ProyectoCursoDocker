@@ -1,0 +1,26 @@
+# Usamos la imagen oficial de Node.js
+FROM node:23-slim
+
+# Instalamos supervisord
+RUN apt-get update && apt-get install -y supervisor
+
+# Definimos el directorio de trabajo
+WORKDIR /app
+
+# Copiamos el archivo de configuración de supervisord
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Copiamos el código de la aplicación
+COPY . .
+
+# Instalamos las dependencias
+RUN npm install
+
+# Ejecutar las pruebas unitarias (esto se hace antes de iniciar la app)
+RUN npm test
+
+# Exponemos el puerto donde la app va a correr
+EXPOSE 8012
+
+# Comando para iniciar supervisord y que gestione Node.js
+CMD ["/usr/bin/supervisord"]

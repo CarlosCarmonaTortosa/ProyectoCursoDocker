@@ -1,0 +1,68 @@
+services:
+  # Servicio para la base de datos MySQL
+  mysql:
+    image: mysql:latest
+    container_name: mysql_comercio
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Script de inicialización
+      - ./supervisord_mysql.conf:/etc/supervisor/conf.d/supervisord.conf  # Supervisord para MySQL
+    networks:
+      - private
+
+  # Servicios para la aplicación Node.js (2 instancias para balanceo de carga desde nginx)
+  node1:
+    build:
+      context: ./app
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    depends_on:
+      - mysql
+    networks:
+      - private
+
+  node2:
+    build:
+      context: ./app
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    depends_on:
+      - mysql
+    networks:
+      - private
+
+  # Servicio para el balanceador de carga NGINX
+  nginx:
+    image: nginx:latest
+    container_name: nginx_comercio
+    ports:
+      - "1234:80"  # Exponer puerto 1234 para acceso desde internet
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/nginx.conf  # Configuración personalizada de NGINX
+      - ./supervisord_nginx.conf:/etc/supervisor/conf.d/supervisord.conf  # Supervisord para NGINX
+    depends_on:
+      - node1
+      - node2
+    networks:
+      - public
+      - private
+
+# Volúmenes para persistir datos
+volumes:
+  mysql_data:
+
+# Redes para comunicación entre los servicios
+networks:
+  private: # Node y MySQL estarán en una red privada sin puertos expuestos para que no puedan ser consuminos de forma directa
+    driver: bridge
+  public: # Nginx usará la red pública con puerto expuesto para quedar accesible vía internet y enrutar las solicitudes. También podrá ver la red privada para comunicar con Node
+    driver: bridge
